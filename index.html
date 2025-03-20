@@ -22,11 +22,15 @@
             const game = new Phaser.Game(phaserConfig);
 
             function preloadScene() {
+                // Load texture atlas (ensure plane.json is properly formatted)
                 this.load.atlas("plane", "plane.png", "plane.json");
             }
 
             function createScene() {
-                // Create animations
+                // Ensure textures are processed correctly
+                this.textures.addAtlasJSONHash("plane", "plane.png", "plane.json");
+
+                // Create flying animation
                 this.anims.create({
                     key: "fly",
                     frameRate: 7,
@@ -34,12 +38,12 @@
                         prefix: "plane",
                         suffix: ".png",
                         start: 1,
-                        end: 3,
-                        zeroPad: 1
+                        end: 3
                     }),
                     repeat: -1
                 });
 
+                // Create explosion animation
                 this.anims.create({
                     key: "explode",
                     frameRate: 7,
@@ -47,17 +51,16 @@
                         prefix: "explosion",
                         suffix: ".png",
                         start: 1,
-                        end: 3,
-                        zeroPad: 1
+                        end: 3
                     }),
                     repeat: 2
                 });
 
-                // Create a plane sprite
+                // Create the plane sprite and start animation
                 let plane = this.add.sprite(640, 360, "plane");
                 plane.play("fly");
 
-                // Play explosion after 3 seconds and remove the sprite
+                // Trigger explosion after 3 seconds
                 this.time.addEvent({
                     delay: 3000,
                     callback: () => {
