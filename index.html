@@ -13,7 +13,6 @@
                 width: 1280,
                 height: 720,
                 scene: {
-                    init: initScene,
                     preload: preloadScene,
                     create: createScene,
                     update: updateScene
@@ -22,9 +21,54 @@
 
             const game = new Phaser.Game(phaserConfig);
 
-            function initScene() { }
-            function preloadScene() { }
-            function createScene() {}
+            function preloadScene() {
+                this.load.atlas("plane", "plane.png", "plane.json");
+            }
+
+            function createScene() {
+                // Create animations
+                this.anims.create({
+                    key: "fly",
+                    frameRate: 7,
+                    frames: this.anims.generateFrameNames("plane", {
+                        prefix: "plane",
+                        suffix: ".png",
+                        start: 1,
+                        end: 3,
+                        zeroPad: 1
+                    }),
+                    repeat: -1
+                });
+
+                this.anims.create({
+                    key: "explode",
+                    frameRate: 7,
+                    frames: this.anims.generateFrameNames("plane", {
+                        prefix: "explosion",
+                        suffix: ".png",
+                        start: 1,
+                        end: 3,
+                        zeroPad: 1
+                    }),
+                    repeat: 2
+                });
+
+                // Create a plane sprite
+                let plane = this.add.sprite(640, 360, "plane");
+                plane.play("fly");
+
+                // Play explosion after 3 seconds and remove the sprite
+                this.time.addEvent({
+                    delay: 3000,
+                    callback: () => {
+                        plane.play("explode");
+                        plane.once(Phaser.Animations.Events.SPRITE_ANIMATION_COMPLETE, () => {
+                            plane.destroy();
+                        });
+                    }
+                });
+            }
+
             function updateScene() {}
 
         </script>
